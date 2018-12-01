@@ -33,7 +33,7 @@ function find_unused_port() {
 }
 
 function install_deps() {
-  for cmd in python2.7 perl pip; do
+  for cmd in python2.7 perl pip2.7; do
     if ! which $cmd >/dev/null 2>&1; then
       echo "ERROR: $cmd is not installed!"
       exit 1
@@ -43,7 +43,7 @@ function install_deps() {
   echo -e "[$(date -Ins)] Installing dependencies"
   [ ! -d $install_dir ] && mkdir $install_dir
   pushd $install_dir >/dev/null
-  pip -q install --user influxdb blist pytz
+  pip2.7 -q install --user influxdb blist pytz
 
   wget -qc https://raw.githubusercontent.com/aviemzur/statsd-jvm-profiler/master/visualization/influxdb_dump.py
   wget -qc https://raw.githubusercontent.com/brendangregg/FlameGraph/master/flamegraph.pl
@@ -186,7 +186,7 @@ function generate_flamegraph() {
 
   python2.7 $install_dir/influxdb_dump.py \
     -o $local_ip -r $influx_http_port -u profiler \
-    -p profiler -d profiler -t spark -e sparkapp -x stack_traces >/dev/null 2>&1 && :
+    -p profiler -d profiler -t spark -e sparkapp -x stack_traces >./dump.log 2>&1 && :
 
   if [ $? -ne 0 ]; then
     echo -e "[$(date -Ins)] No profiling metrics were recorded!"
